@@ -11,6 +11,7 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController emailController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController(); // Ajouté
   final TextEditingController motDePasseController = TextEditingController();
   final TextEditingController confirmerMotDePasseController = TextEditingController();
 
@@ -23,7 +24,12 @@ class _RegisterPageState extends State<RegisterPage> {
     }
 
     final serviceAuth = AuthService();
-    final response = await serviceAuth.inscription(emailController.text, motDePasseController.text);
+    final response = await serviceAuth.inscription(
+      emailController.text,
+      usernameController.text,
+      motDePasseController.text,
+      confirmerMotDePasseController.text,
+    );
 
     if (response.statusCode == 201 || response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -31,9 +37,19 @@ class _RegisterPageState extends State<RegisterPage> {
       );
       Navigator.pushNamed(context, '/login');
     } else {
+      String message = 'Échec de l\'inscription';
+      try {
+        final data = jsonDecode(response.body);
+        if (data is Map && data.isNotEmpty) {
+          message = data.values.first[0];
+        }
+      } catch (e) {
+        print('Erreur parsing JSON: $e');
+      }
+
       print('Erreur lors de l\'inscription');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Échec de l\'inscription')),
+        SnackBar(content: Text(message)),
       );
     }
   }
@@ -52,6 +68,11 @@ class _RegisterPageState extends State<RegisterPage> {
             TextField(
               controller: emailController,
               decoration: InputDecoration(labelText: 'Email'),
+            ),
+            SizedBox(height: 16),
+            TextField(
+              controller: usernameController,
+              decoration: InputDecoration(labelText: 'Nom d\'utilisateur'),
             ),
             SizedBox(height: 16),
             TextField(
