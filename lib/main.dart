@@ -23,7 +23,7 @@ class MonApp extends StatelessWidget {
       title: 'EcoShop',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme, // <-- Utilisation du thème global
-      initialRoute: '/login',
+      initialRoute: '/l',
       routes: {
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegisterPage(),

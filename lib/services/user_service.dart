@@ -46,4 +46,24 @@ class Product {
       siteUrl: json['site_marchand'],
     );
   }
+
+  Future<Product> getProductByName(String name, {String? apiKey}) async {
+  Uri url = Uri.parse(Api.produits); // Tu dois avoir une route dédiée
+  Map<String, String> params = {'name': name};
+  if (apiKey != null) {
+    params['api_key'] = apiKey;
+  }
+
+  url = url.replace(queryParameters: params);
+
+  final response = await http.get(url);
+
+  if (response.statusCode == 200) {
+    final Map<String, dynamic> productJson = jsonDecode(response.body);
+    return Product.fromJson(productJson);
+  } else {
+    throw Exception('Produit non trouvé');
+  }
+}
+
 }

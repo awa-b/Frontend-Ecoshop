@@ -47,19 +47,23 @@ class _ProductsPageState extends State<ProductsPage> {
     });
   }
 
+  // Naviguer vers la page de connexion ou d'inscription
+  void _goToLogin() {
+    Navigator.pushNamed(context, '/login'); // Remplacez '/login' par la route appropriée
+  }
+
+  void _goToProductDetail(Product product) {
+    Navigator.pushNamed(context, '/productDetail', arguments: product);
+  }
+
   // Fonction pour ouvrir un lien
-  void _openProductUrl(String url) async {
+  void _buyProduct(String url) async {
     final uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri);
     } else {
       print('Impossible d’ouvrir l’URL : $url');
     }
-  }
-
-  // Naviguer vers la page de connexion ou d'inscription
-  void _goToLogin() {
-    Navigator.pushNamed(context, '/login'); // Remplacez '/login' par la route appropriée
   }
 
   @override
@@ -114,10 +118,10 @@ class _ProductsPageState extends State<ProductsPage> {
                 : GridView.builder(
                     padding: const EdgeInsets.all(8.0),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 4, // 4 colonnes pour un affichage sur grand écran
+                      crossAxisCount: 4,
                       crossAxisSpacing: 16.0,
                       mainAxisSpacing: 16.0,
-                      childAspectRatio: 0.75, // Aspect ratio plus grand pour une meilleure lisibilité
+                      childAspectRatio: 0.75,
                     ),
                     itemCount: filteredProducts.length,
                     itemBuilder: (context, index) {
@@ -125,32 +129,31 @@ class _ProductsPageState extends State<ProductsPage> {
                       return Card(
                         elevation: 6.0,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12), // Coins arrondis pour un design moderne
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Image
                             Container(
-                              height: 200, // Hauteur plus grande pour les images
+                              height: 200,
                               width: double.infinity,
                               child: Image.network(
                                 product.imageUrl,
-                                fit: BoxFit.cover, // Image bien ajustée
+                                fit: BoxFit.cover,
                               ),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: ConstrainedBox(
-                                constraints: BoxConstraints(maxWidth: 200), // Limiter la largeur du texte
+                                constraints: BoxConstraints(maxWidth: 200),
                                 child: Text(
                                   product.name,
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 16, // Taille du texte ajustée pour un grand écran
+                                    fontSize: 16,
                                   ),
                                   overflow: TextOverflow.ellipsis,
-                                  maxLines: 2, // Limiter à 2 lignes de texte
+                                  maxLines: 2,
                                 ),
                               ),
                             ),
@@ -168,13 +171,20 @@ class _ProductsPageState extends State<ProductsPage> {
                               ),
                             ),
                             Spacer(),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: ElevatedButton(
-                                onPressed: () => _openProductUrl(product.siteUrl),
-                                child: Text('Voir le produit'),
-                              ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                TextButton(
+                                  onPressed: () => _goToProductDetail(product),
+                                  child: Text('Détails'),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () => _buyProduct(product.siteUrl),
+                                  child: Text('Acheter'),
+                                ),
+                              ],
                             ),
+                            SizedBox(height: 8),
                           ],
                         ),
                       );
