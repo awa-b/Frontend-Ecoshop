@@ -1,11 +1,11 @@
-import 'dart:convert'; // Importer jsonDecode
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:ecoshop_flutter/services/auth_service.dart';
+import '../services/auth_service.dart';
 
 class ProfilePage extends StatefulWidget {
-  final String tokenAcces; // <- Ajouté !
+  final String tokenAcces;
 
-  const ProfilePage({Key? key, required this.tokenAcces}) : super(key: key); // <- Modifié aussi !
+  const ProfilePage({Key? key, required this.tokenAcces}) : super(key: key);
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -17,15 +17,15 @@ class _ProfilePageState extends State<ProfilePage> {
   int points = 0;
 
   Future<void> _chargerProfil() async {
-    final authService = AuthService(); // <- ici on crée une instance
-    final response = await authService.profil(widget.tokenAcces); // <- on passe le tokenAcces
+    final authService = AuthService();
+    final response = await authService.profil(widget.tokenAcces);
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body); // Décode la réponse JSON
+      final data = jsonDecode(response.body);
       setState(() {
-        email = data['email']; // Récupère l'email
-        username = data['nom_utilisateur']; // Récupère le nom d'utilisateur
-        points = data['points']; // Récupère les points
+        email = data['email'];
+        username = data['nom_utilisateur'];
+        points = data['points'];
       });
     } else {
       print('Erreur lors du chargement du profil');
@@ -40,69 +40,78 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final tailleEcran = MediaQuery.of(context).size;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profil Utilisateur'),
-        backgroundColor: Colors.deepPurple, // Changer la couleur de l'appbar
+        title: const Text('Profil Utilisateur'),
+        backgroundColor: Colors.deepPurple,
       ),
       body: Center(
-        child: email.isEmpty // Afficher un loader jusqu'à ce que l'email soit chargé
-            ? CircularProgressIndicator()
-            : Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Nom Utilisateur: $username',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.deepPurple,
-                      ),
+        child: email.isEmpty
+            ? const CircularProgressIndicator()
+            : SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: tailleEcran.width < 600 ? 400 : 500,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Nom Utilisateur : $username',
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.deepPurple,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Email : $email',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            color: Colors.black87,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Points : $points',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            color: Colors.green,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 32),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/modif_profil');
+                          },
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: Size(tailleEcran.width < 600 ? 150 : 200, 50),
+                            backgroundColor: Colors.black,
+                          ),
+                          child: const Text('Modifier le Profil'),
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/history');
+                          },
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: Size(tailleEcran.width < 600 ? 150 : 200, 50),
+                            backgroundColor: Colors.green,
+                          ),
+                          child: const Text('Voir l\'Historique'),
+                        ),
+                      ],
                     ),
-                    SizedBox(height: 16),
-                    Text(
-                      'Email: $email',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                    Text(
-                      'Points: $points',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.green,
-                      ),
-                    ),
-                    SizedBox(height: 32),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Rediriger vers la page de modification du profil
-                        Navigator.pushNamed(context, '/modif_profil');
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black, // Couleur du bouton
-                      ),
-                      child: Text('Modifier le Profil'),
-                    ),
-                    SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Rediriger vers la page de l'historique
-                        Navigator.pushNamed(context, '/history');
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green, // Couleur du bouton
-                      ),
-                      child: Text('Voir l\'Historique'),
-                    ),
-                  ],
+                  ),
                 ),
               ),
       ),

@@ -19,15 +19,14 @@ class _LoginPageState extends State<LoginPage> {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      final tokenAcces = data['jeton_acces']; // Attention au nom exact dans ta réponse JSON
+      final tokenAcces = data['jeton_acces'];
 
-      Navigator.pushNamed(context, '/profile', arguments: {
+      Navigator.pushNamed(context, '/products', arguments: {
         'tokenAcces': tokenAcces,
       });
     } else {
-      print('Erreur de connexion');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Échec de la connexion')),
+        const SnackBar(content: Text('Échec de la connexion')),
       );
     }
   }
@@ -35,9 +34,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Connexion'),
-      ),
+      appBar: AppBar(title: const Text('Connexion')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -45,25 +42,25 @@ class _LoginPageState extends State<LoginPage> {
           children: [
             TextField(
               controller: emailController,
-              decoration: InputDecoration(labelText: 'Email'),
+              decoration: const InputDecoration(labelText: 'Email'),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextField(
               controller: motDePasseController,
-              decoration: InputDecoration(labelText: 'Mot de passe'),
+              decoration: const InputDecoration(labelText: 'Mot de passe'),
               obscureText: true,
             ),
-            SizedBox(height: 32),
+            const SizedBox(height: 32),
             ElevatedButton(
               onPressed: _connexion,
-              child: Text('Se connecter'),
+              child: const Text('Se connecter'),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/register');
               },
-              child: Text("Créer un compte"),
+              child: const Text("Créer un compte"),
             ),
           ],
         ),
